@@ -1,0 +1,97 @@
+import meraki
+import csv
+import os
+
+API_KEY = 'API-KEY HERE' #add your api key from your profile 
+SWITCH_SERIALS = ['QXXX-XXXX-XXXX']  # Add more if needed
+OUTPUT_FOLDER = 'meraki_switch_exports'
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+dashboard = meraki.DashboardAPI(API_KEY, suppress_logging=True)
+
+master_rows = []
+
+for serial in SWITCH_SERIALS:
+    print(f"\n🔍 Collecting data for {serial}...")
+
+    try:
+        device = dashboard.devices.getDevice(serial)
+        ports = dashboard.switch.getDeviceSwitchPorts(serial)
+        statuses = dashboard.switch.getDeviceSwitchPortsStatuses(serial)
+        
+        # Get network ID from device
+        network_id = device['networkId']
+        clients = dashboard.networks.getNetworkClients(
+            network_id,
+            total_pages='all'
+        )
+    except Exception as e:
+        print(f" Error fetching {serial}: {e}")
+        continue
+
+    # Build lookup dictionaries
+    status_dict = {str(s['portId']): s for s in statuses}
+    client_dict = {}
+    for c in clients:
+        if c.get('switchport'):
+            client_dict[c['switchport']] = {
+                'mac': c.get('mac'),
+                'vendor': c.get('manufacturer')
+            }
+
+    switch_name = device.get('name', serial)
+    rows = []
+
+    for p in ports:
+        port_id = str(p.get('portId', ''))
+        status = status_dict.get(port_id, {})
+        client_info = client_dict.get(port_id, {})
+        mac = client_info.get('mac', '')
+        vendor = client_info.get('vendor', '')
+
+        # Neighbor info (CDP/LLDP)
+        neighbor = ''
+        cdp_info = status.get('cdp', {}) or status.get('lldp', {})
+        if isinstance(cdp_info, dict):
+            neighbor = (
+                cdp_info.get('systemName')
+                or cdp_info.get('deviceId')
+                or cdp_info.get('portId')
+                or ''
+            )
+
+        rows.append({
+            'Switch Name': switch_name,
+            'Port Number': port_id,
+            'Port Name': p.get('name', ''),
+            'VLAN': p.get('vlan', ''),
+            'MAC Address': mac,
+            'OUI Vendor': vendor,
+            'CDP/LLDP Neighbor': neighbor,
+        })
+
+        master_rows.append(rows[-1])
+
+    # Save per-switch CSV
+    file_name = f"{switch_name.replace(' ', '_')}_{serial}.csv"
+    path = os.path.join(OUTPUT_FOLDER, file_name)
+
+    with open(path, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(f" Saved: {path}")
+
+# Write combined file
+if master_rows:
+    master_file = os.path.join(OUTPUT_FOLDER, 'ALL_SWITCHES_COMBINED.csv')
+    with open(master_file, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=master_rows[0].keys())
+        writer.writeheader()
+        writer.writerows(master_rows)
+    print(f"\n Master export complete: {master_file}")
+else:
+    print("\n No data collected.")
+
+New File at / · PatrickDenis/Meraki
