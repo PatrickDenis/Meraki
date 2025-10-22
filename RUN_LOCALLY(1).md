@@ -1,11 +1,11 @@
-# 🧠 Meraki Switch Port Exporter
+# Meraki Switch Port Exporter
 
 This script automates the collection of detailed **Meraki switch port data** — including VLANs, MAC addresses, vendors, and CDP/LLDP neighbors — into organized CSV files.  
 It’s particularly useful because **the Meraki Dashboard does not natively allow full switch port exports** with this level of granularity or flexibility.
 
 ---
 
-## 🚀 Why Use This Script?
+## Why Use This Script?
 
 Cisco Meraki’s web GUI is great for monitoring but limited for bulk data handling.  
 From the GUI, you can’t easily:
@@ -23,7 +23,7 @@ It’s a must-have for **network administrators, auditors, and engineers** who n
 
 ---
 
-## 🧩 Requirements
+## Requirements
 
 Make sure your system meets these prerequisites:
 
@@ -35,7 +35,7 @@ Make sure your system meets these prerequisites:
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 ### 1. Clone or Download the Repository
 ```bash
@@ -74,7 +74,7 @@ The script will automatically:
 
 ---
 
-## 📂 Output Files Explained
+## Output Files Explained
 
 | File | Description |
 |------|--------------|
@@ -96,7 +96,7 @@ These details allow you to **trace connectivity** at every port — useful for d
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 1. **Authentication:**  
    Connects to your Meraki dashboard using your API key.
@@ -114,7 +114,7 @@ These details allow you to **trace connectivity** at every port — useful for d
 
 ---
 
-## 🧰 Benefits of Using the API Instead of the GUI
+## Benefits of Using the API Instead of the GUI
 
 - **Automation:** Run it daily or on a schedule with cron.  
 - **Scalability:** Works across dozens or hundreds of switches.  
@@ -124,7 +124,7 @@ These details allow you to **trace connectivity** at every port — useful for d
 
 ---
 
-## 🔒 Security Tips
+## Security Tips
 
 - **Never share your API key publicly.**
 - Store your key in an environment variable if you’re automating:
@@ -149,7 +149,7 @@ Example row from CSV:
 
 ---
 
-## ⚡ Troubleshooting
+## Troubleshooting
 
 **Issue:** API key error or rate limit  
 **Fix:** Ensure your key has full organization access. Retry after a few minutes.
@@ -162,7 +162,7 @@ Example row from CSV:
 
 ---
 
-## 💡 Next Steps
+## Next Steps
 
 You can easily extend this tool to:
 - Push results to a **database or dashboard**
@@ -171,9 +171,9 @@ You can easily extend this tool to:
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Patrick Denis**  
 Senior Network Engineer • Network Solutions USA  
 Fort Lauderdale, FL  
-[https://www.networksolutionsusa.com](https://www.networksolutionsusa.com)
+
